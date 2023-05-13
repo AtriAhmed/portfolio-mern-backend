@@ -16,7 +16,7 @@ require('./config/passportConfig')(passport) // pass passport for configuration
 const sessionStore = require('./config/promiseConnection')
 var corsOptions = {
   credentials: true,
-  origin: ['https://ahmedatri.com']
+  origin: ['https://ahmedatri.com', 'http://localhost:3000']
 }
 
 app.use(cors(corsOptions));
