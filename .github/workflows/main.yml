@@ -11,7 +11,7 @@ jobs:
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@4.3.3
       with:
-        server: altarfi1.supremepanel1.fi
+        server: ftp.ahmedatri.com
         username: me@ahmedatri.com
         password: ${{ secrets.ftp_password }}
         server-dir: /portfolio-backend.ahmedatri.com/
