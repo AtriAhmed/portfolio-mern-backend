@@ -61,7 +61,10 @@ recordRoutes.route("/add-work").post(removeSpaces, function (req, response) {
 });
 
 // This section will help you update a record by id.
-recordRoutes.route("/update-work/:id").put(removeSpaces, function (req, response) {
+recordRoutes.route("/update-work/:id").put(removeSpaces, async function (req, response) {
+
+  const oldWork = await Work.findOne(req.params.id);
+
   if (req.files?.image) {
     var file = req.files.image
     var image = `uploads/images/${file.name}`
@@ -78,7 +81,7 @@ recordRoutes.route("/update-work/:id").put(removeSpaces, function (req, response
       name: req.body.name,
       description: req.body.description,
       technologies: req.body.technologies,
-      image: image,
+      image: image ? image : oldWork.image,
       link: req.body.link
     },
   };
