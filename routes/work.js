@@ -100,7 +100,7 @@ recordRoutes.route("/delete-work/:id").delete((req, response) => {
 });
 
 function removeSpaces(req, res, next) {
-  if (req.files?.image) {
+  if (req.files.image) {
     req.files.image.name = req.files.image.name.replace(/\s/g, '');
   }
   next()
