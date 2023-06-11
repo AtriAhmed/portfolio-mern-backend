@@ -45,6 +45,7 @@ app.use(require("./routes/nodemailer"));
 app.use(require("./routes/login"));
 app.use(require("./routes/logout"));
 app.use(require("./routes/about"));
+app.use(require("./routes/contact"));
 
 
 app.listen(PORT, () => {

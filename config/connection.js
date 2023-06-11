@@ -56,6 +56,15 @@ const AboutSchema = new mongoose.Schema({
     content: String
 });
 
+const ContactSchema = new mongoose.Schema({
+    name: String,
+    lastname: String,
+    title: String,
+    email: String,
+    phone: String,
+    location: String
+});
+
 
 const User = connection.model('User', UserSchema);
 
@@ -68,6 +77,8 @@ const Type = connection.model('Type', TypeSchema);
 const Work = connection.model('Work', WorkSchema, "work");
 
 const About = connection.model('About', AboutSchema, "about");
+
+const Contact = connection.model('Contact', ContactSchema, "contact");
 
 // Expose the connection
 module.exports = connection;
