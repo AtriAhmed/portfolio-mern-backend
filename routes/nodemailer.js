@@ -31,7 +31,7 @@ recordRoutes.route("/send-email").post(async function (req, res) {
     secure: true, // true for 465, false for other ports
     auth: {
       user: "contact@ahmedatri.com", // generated ethereal user
-      pass: "MyyWHNn8NW}LNT5", // generated ethereal password
+      pass: process.env.MAIL_PASSWORD, // generated ethereal password
     },
     tls: { rejectUnauthorized: false }
   });
