@@ -48,7 +48,8 @@ const WorkSchema = new mongoose.Schema({
     description: String,
     technologies: String,
     image: String,
-    link: String
+    link: String,
+    showInCV: Boolean
 });
 
 const AboutSchema = new mongoose.Schema({
