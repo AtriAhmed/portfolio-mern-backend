@@ -5,12 +5,12 @@ jobs:
     name: 🎉 Deploy
     runs-on: ubuntu-latest
     steps:
-    - name: 🚚 Get latest code
-      uses: actions/checkout@v3
-    
-    - name: 📂 Sync files
-      uses: SamKirkland/FTP-Deploy-Action@4.3.3
-      with:
-        server: ftp.ahmedatri.com
-        username: me@portfolio-backend.ahmedatri.com
-        password: ${{ secrets.ftp_password }}
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v3
+
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: omaratri.online
+          username: admin_portfolio-backend
+          password: ${{ secrets.ftp_password }}
