@@ -36,7 +36,7 @@ recordRoutes.route("/send-email").post(async function (req, res) {
     tls: { rejectUnauthorized: false }
   });
 
-  // send mail with defined transport object
+  // send mail with defined transport objec
   let info = await transporter.sendMail({
     from: "contact@ahmedatri.com", // sender address
     to: "atriahmed.1999@gmail.com", // list of receivers
