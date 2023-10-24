@@ -30,7 +30,8 @@ const ExperienceSchema = new mongoose.Schema({
     name: String,
     position: String,
     date: String,
-    description: String
+    description: String,
+    showInCV: Boolean
 });
 
 const SkillSchema = new mongoose.Schema({
