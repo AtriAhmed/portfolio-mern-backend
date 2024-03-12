@@ -16,7 +16,7 @@ async function sendMail(req, res) {
     port: 465,
     secure: true, // true for 465, false for other ports
     auth: {
-      user: "contact@ahmedatri.com", // generated ethereal user
+      user: process.env.MAIL_USER, // generated ethereal user
       pass: process.env.MAIL_PASSWORD, // generated ethereal password
     },
     tls: { rejectUnauthorized: false }
@@ -24,8 +24,8 @@ async function sendMail(req, res) {
 
   // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: "contact@ahmedatri.com", // sender address
-    to: "atriahmed.1999@gmail.com", // list of receivers
+    from: process.env.MAIL_USER, // sender address
+    to: "contact@ahmedatri.com", // list of receivers
     subject: req.body.subject, // Subject line
     html: htmlBody(req.body.name, req.body.email, req.body.subject, req.body.message) // html body
   });
