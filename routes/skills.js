@@ -2,9 +2,8 @@ const express = require("express");
 
 const route = express.Router();
 
-const { getSkillsByTypes, getSkills, getSkillById, addSkill, updateSkill, deleteSkill } = require("../controllers/skillsContoller");
+const { getSkills, getSkillById, addSkill, updateSkill, deleteSkill } = require("../controllers/skillsContoller");
 
-route.get("/get-types-with-skills", getSkillsByTypes);
 
 route.get("/get-all-skills", getSkills);
 

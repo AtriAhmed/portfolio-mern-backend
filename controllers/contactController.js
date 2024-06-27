@@ -1,11 +1,12 @@
-const connection = require('../config/connection');
+const dbConnect = require('../config/dbConnect');
 const { isAuthenticated } = require('../middlewares/isAuthenticated');
-const Contact = connection.models.Contact;
+const Contact = require("../models/Contact");
 
 // This help convert the id from string to ObjectId for the _id.
 const ObjectId = require("mongodb").ObjectId;
 
-function getContact(req, res){
+async function getContact(req, res) {
+    await dbConnect();
     Contact.findOne({}).then(data => {
         res.status(200).json(data)
     }).catch(err => {
@@ -13,7 +14,8 @@ function getContact(req, res){
     })
 }
 
-const addContact = [isAuthenticated,(req, response) => {
+const addContact = [isAuthenticated, async (req, response) => {
+    await dbConnect();
     let myobj = {
         name: req.body.name,
         lastname: req.body.lastname,
@@ -30,7 +32,8 @@ const addContact = [isAuthenticated,(req, response) => {
     })
 }]
 
-const updateController = [isAuthenticated,(req, response)=> {
+const updateController = [isAuthenticated, async (req, response) => {
+    await dbConnect();
     let myquery = { _id: ObjectId(req.params.id) };
     let newvalues = {
         $set: {
@@ -42,12 +45,12 @@ const updateController = [isAuthenticated,(req, response)=> {
             location: req.body.location,
         },
     };
-    
+
     Contact.updateOne(myquery, newvalues).then((res) => {
-            response.json(res);
-        }).catch(err => {
-            response.json(err)
-        })
+        response.json(res);
+    }).catch(err => {
+        response.json(err)
+    })
 }]
 
-module.exports = {getContact, addContact, updateController}
+module.exports = { getContact, addContact, updateController }

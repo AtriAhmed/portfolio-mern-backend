@@ -7,13 +7,13 @@ require("dotenv").config({ path: "./config.env" });
 const session = require('express-session')
 const PORT = process.env.PORT || 5000;
 
-const connection = require('./config/connection');
-const User = connection.models.User;
+const dbConnect = require('./config/dbConnect');
+const User = require('./models/User');
 
 const passport = require('passport')
 require('./config/passportConfig')(passport) // pass passport for configuration
 
-const sessionStore = require('./config/promiseConnection')
+const sessionStore = require('./config/promiseConnection');
 var corsOptions = {
   credentials: true,
   origin: ['https://ahmedatri.com', 'http://localhost:3000']
@@ -46,9 +46,15 @@ app.use(require("./routes/login"));
 app.use(require("./routes/logout"));
 app.use(require("./routes/about"));
 app.use(require("./routes/contact"));
+app.use(require("./routes/education"));
 
+async function main() {
+  await dbConnect();
 
-app.listen(PORT, () => {
-  User.find({}).then(res => { console.log("connected to mongodb") }).catch(err => console.log(err))
-  console.log(`Server is running on port: ${PORT}`);
-});
+  app.listen(PORT, () => {
+    User.find({}).then(res => { console.log("connected to mongodb") }).catch(err => console.log(err))
+    console.log(`Server is running on port: ${PORT}`);
+  });
+}
+
+main();
