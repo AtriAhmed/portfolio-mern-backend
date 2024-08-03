@@ -1,8 +1,12 @@
+const uuidv4 = require("uuid").v4;
+
 const dbConnect = require('../config/dbConnect');
 const { isAuthenticated } = require('../middlewares/isAuthenticated');
 const Experience = require("../models/Experience")
 
 const ObjectId = require("mongodb").ObjectId;
+const path = require("path");
+const { removeSpaces } = require("../middlewares/removeSpaces");
 
 async function getExperience(req, res) {
   await dbConnect();
@@ -23,14 +27,30 @@ async function getExperienceById(req, res) {
     });
 }
 
-const addExperience = [isAuthenticated, async (req, response) => {
+const addExperience = [removeSpaces, isAuthenticated, async (req, response) => {
   await dbConnect();
 
+  if (req.files.image) {
+    var file = req.files.image;
+    var extension = path.extname(file.name);
+    var imageName = uuidv4() + extension;
+    var image = `uploads/images/${imageName}`;
+
+    file.mv(`./public/uploads/images/${imageName}`, err => {
+      if (err) {
+        console.error(err);
+      }
+    });
+  } else image = ''
+
+  const body = req.body;
+
   let myobj = {
-    name: req.body.name,
-    position: req.body.position,
-    date: req.body.date,
-    description: req.body.description,
+    name: body.name,
+    position: body.position,
+    date: body.date,
+    description: body.description,
+    image: image,
   };
 
   Experience.create(myobj).then(res => {
@@ -40,15 +60,33 @@ const addExperience = [isAuthenticated, async (req, response) => {
   })
 }]
 
-const updateExperience = [isAuthenticated, async (req, response) => {
+const updateExperience = [isAuthenticated, removeSpaces, async (req, response) => {
   await dbConnect();
+
+  const oldExperience = await Experience.findOne({ _id: ObjectId(req.params.id) });
+
+  if (req.files?.image) {
+    var file = req.files.image;
+    var extension = path.extname(file.name);
+    var imageName = uuidv4() + extension;
+    var image = `uploads/images/${imageName}`;
+
+    file.mv(`./public/uploads/images/${imageName}`, err => {
+      if (err) {
+        console.error(err);
+      }
+    });
+  } else image = ''
+
   let myquery = { _id: ObjectId(req.params.id) };
+  const body = req.body;
   let newvalues = {
     $set: {
-      name: req.body.name,
-      position: req.body.position,
-      date: req.body.date,
-      description: req.body.description,
+      name: body.name,
+      position: body.position,
+      date: body.date,
+      description: body.description,
+      image: image ? image : oldExperience.image,
     },
   };
   Experience.updateOne(myquery, newvalues).then((res) => {

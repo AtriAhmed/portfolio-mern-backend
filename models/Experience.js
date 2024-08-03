@@ -5,6 +5,7 @@ const ExperienceSchema = new mongoose.Schema({
     position: String,
     date: String,
     description: String,
+    image: String,
     showInCV: Boolean
 });
 
