@@ -1,6 +1,8 @@
-const connection = require('./connection');
-const User = connection.models.User;
-const bcrypt = require('bcrypt')
+const connection = require('./dbConnect');
+// const User = connection.models.User;
+const User = require('../models/User');
+const bcrypt = require('bcrypt');
+const dbConnect = require('./dbConnect');
 const LocalStrategy = require('passport-local').Strategy
 
 module.exports = passport => {
@@ -13,10 +15,11 @@ module.exports = passport => {
 
   // used to deserialize the user
 
-  passport.deserializeUser( (id, done) => {
+  passport.deserializeUser(async (id, done) => {
+    await dbConnect();
     User.findById(id).then((user) => {
-      done(null , user)
-    }).catch(err=>{
+      done(null, user)
+    }).catch(err => {
       done(err)
     })
   })
@@ -24,14 +27,15 @@ module.exports = passport => {
   passport.use(
     new LocalStrategy(
       { passReqToCallback: true },
-       (req, username, password, done) => {
+      async (req, username, password, done) => {
+        await dbConnect();
         // console.log(`Pass port use local-strategy sign in attempt for: ${username}`)
 
         if (!req.user && (!username === '' || password.length >= 5)) {
           // callback with username and password from client must match basic requirements before even being compared in DB
 
           // console.log('attempting to get user from DB')
-          User.findOne({username:username}).then((user) => {
+          User.findOne({ username: username }).then((user) => {
             if (!user) {
               // console.log(`No user found Returning from local-strategy login failed to login ${username}`)
 
@@ -60,7 +64,7 @@ module.exports = passport => {
                 }
               })
             }
-          }).catch(err=>{done(err)})
+          }).catch(err => { done(err) })
         } else if (req.user) {
           // console.log('User attempted to log in while already logged in.')
           done(null, req.user)

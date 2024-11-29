@@ -1,6 +1,7 @@
-const connection = require('../config/connection');
+const dbConnect = require('../config/dbConnect');
 const { isAuthenticated } = require('../middlewares/isAuthenticated');
-const Type = connection.models.Type;
+const Skill = require('../models/Skill');
+const Type = require("../models/Type");
 
 
 // This help convert the id from string to ObjectId for the _id.
@@ -8,7 +9,8 @@ const ObjectId = require("mongodb").ObjectId;
 
 
 // This section will help you get a list of all the records.
-function getTypes(req, res) {
+async function getTypes(req, res) {
+  await dbConnect()
   Type.find().then(data => {
     res.status(200).json(data)
   }).catch(err => {
@@ -16,8 +18,24 @@ function getTypes(req, res) {
   })
 };
 
+// This section will help you get a list of all the records.
+async function getTypesWithSkills(req, res) {
+  await dbConnect()
+  Type.find().then(async (types) => {
+    const typesWithSkills = await Promise.all(types.map(async (type) => {
+      const skills = await Skill.find({ type: new ObjectId(type._id) });
+
+      return { ...type._doc, skills };
+    }));
+    res.status(200).json(typesWithSkills);
+  }).catch(err => {
+    res.status(404).json(err)
+  })
+};
+
 // This section will help you get a single record by id
-function getTypeById(req, res) {
+async function getTypeById(req, res) {
+  await dbConnect();
 
   let myquery = { _id: ObjectId(req.params.id) };
   Type
@@ -28,7 +46,8 @@ function getTypeById(req, res) {
 };
 
 // This section will help you create a new record.
-const addType = [isAuthenticated, (req, response) => {
+const addType = [isAuthenticated, async (req, response) => {
+  await dbConnect();
 
   let myobj = {
     name: req.body.name
@@ -42,7 +61,8 @@ const addType = [isAuthenticated, (req, response) => {
 }]
 
 // This section will help you update a record by id.
-const updateType = [isAuthenticated, (req, response)=> {
+const updateType = [isAuthenticated, async (req, response) => {
+  await dbConnect();
 
   let myquery = { _id: ObjectId(req.params.id) };
   let newvalues = {
@@ -59,7 +79,8 @@ const updateType = [isAuthenticated, (req, response)=> {
 }]
 
 // This section will help you delete a record
-const deleteType = [isAuthenticated, (req, response) => {
+const deleteType = [isAuthenticated, async (req, response) => {
+  await dbConnect();
 
   let myquery = { _id: ObjectId(req.params.id) };
   Type.deleteOne(myquery, function (err, obj) {
@@ -68,4 +89,4 @@ const deleteType = [isAuthenticated, (req, response) => {
   });
 }]
 
-module.exports = {getTypes, getTypeById, addType, updateType, deleteType};
+module.exports = { getTypes, getTypeById, addType, updateType, deleteType, getTypesWithSkills };

@@ -1,38 +1,42 @@
-const connection = require('../config/connection');
-const  {isAuthenticated} = require('../middlewares/isAuthenticated');
-const About = connection.models.About;
+const dbConnect = require('../config/dbConnect');
+const About = require("../models/About");
+const { isAuthenticated } = require('../middlewares/isAuthenticated');
 const ObjectId = require("mongodb").ObjectId;
 
-function getAbout(req, res){
-        About.find().then(data => {
-            res.status(200).json(data)
-        }).catch(err => {
-            res.status(404).json(err)
-        })
+async function getAbout(req, res) {
+    await dbConnect();
+    About.find().then(data => {
+        res.status(200).json(data)
+    }).catch(err => {
+        res.status(404).json(err)
+    })
 }
 
-function getAboutById(req, res){
-        let myquery = { _id: ObjectId(req.params.id) };
-        About.findOne(myquery, function (err, result) {
-                if (err) throw err;
-                res.json(result);
-            });
+async function getAboutById(req, res) {
+    await dbConnect();
+    let myquery = { _id: ObjectId(req.params.id) };
+    About.findOne(myquery, function (err, result) {
+        if (err) throw err;
+        res.json(result);
+    });
 }
 
-const addAbout = [isAuthenticated,(req, response)=>{ 
-        let myobj = {
-            title: req.body.title,
-            content: req.body.content
-        };
-        About.create(myobj).then(res => {
-            response.json(res);
-        }).catch(err => {
-            response.json(err)
-        })
+const addAbout = [isAuthenticated, async (req, response) => {
+    await dbConnect();
+    let myobj = {
+        title: req.body.title,
+        content: req.body.content
+    };
+    About.create(myobj).then(res => {
+        response.json(res);
+    }).catch(err => {
+        response.json(err)
+    })
 }]
 
 
-const updateAbout=  [isAuthenticated, (req, response)=> {
+const updateAbout = [isAuthenticated, async (req, response) => {
+    await dbConnect();
     let myquery = { _id: ObjectId(req.params.id) };
     let newvalues = {
         $set: {
@@ -47,7 +51,8 @@ const updateAbout=  [isAuthenticated, (req, response)=> {
     })
 }]
 
-const deleteAbout = [isAuthenticated, (req, response) =>{
+const deleteAbout = [isAuthenticated, async (req, response) => {
+    await dbConnect();
     let myquery = { _id: ObjectId(req.params.id) };
     About.deleteOne(myquery).then(res => {
         response.json(res);
@@ -56,4 +61,4 @@ const deleteAbout = [isAuthenticated, (req, response) =>{
     });
 }]
 
-module.exports = {getAbout, getAboutById, addAbout, updateAbout, deleteAbout};
+module.exports = { getAbout, getAboutById, addAbout, updateAbout, deleteAbout };

@@ -1,28 +1,20 @@
-const connection = require('../config/connection');
+const dbConnect = require('../config/dbConnect');
 const { isAuthenticated } = require('../middlewares/isAuthenticated');
-const Skill = connection.models.Skill;
+const Skill = require("../models/Skill");
 
 const ObjectId = require("mongodb").ObjectId;
 
-function getSkillsByTypes(req, res) {
-  Skill
-    .aggregate([{ $group: { _id: "$type", records: { $push: "$$ROOT" } } }])
-    .then(result => {
-      res.json(result);
-    }).catch(err => {
-      console.log(err)
-    })
-}
-
-function getSkills(req, res) {
-  Skill.find().then(data => {
+async function getSkills(req, res) {
+  await dbConnect();
+  Skill.find().populate("type").then(data => {
     res.status(200).json(data)
   }).catch(err => {
     res.status(404).json(err)
   })
 }
 
-function getSkillById(req, res) {
+async function getSkillById(req, res) {
+  await dbConnect();
   Skill
     .findOne(myquery, function (err, result) {
       if (err) throw err;
@@ -30,11 +22,12 @@ function getSkillById(req, res) {
     });
 }
 
-const addSkill = [isAuthenticated, (req, response)=>{
+const addSkill = [isAuthenticated, async (req, response) => {
+  await dbConnect();
   let myobj = {
     name: req.body.name,
     level: req.body.level,
-    type: req.body.type
+    type: new ObjectId(req.body.type)
   };
   Skill.create(myobj).then(res => {
     response.json(res);
@@ -43,7 +36,8 @@ const addSkill = [isAuthenticated, (req, response)=>{
   })
 }]
 
-const updateSkill = [isAuthenticated, (req, response)=> {
+const updateSkill = [isAuthenticated, async (req, response) => {
+  await dbConnect();
 
   let myquery = { _id: ObjectId(req.params.id) };
   let newvalues = {
@@ -61,7 +55,8 @@ const updateSkill = [isAuthenticated, (req, response)=> {
     })
 }]
 
-const deleteSkill = [isAuthenticated, (req, response)=>{
+const deleteSkill = [isAuthenticated, async (req, response) => {
+  await dbConnect();
 
   let myquery = { _id: ObjectId(req.params.id) };
   Skill.deleteOne(myquery, function (err, obj) {
@@ -70,4 +65,4 @@ const deleteSkill = [isAuthenticated, (req, response)=>{
   });
 }]
 
-module.exports = {getSkillsByTypes, getSkills, getSkillById, addSkill, updateSkill, deleteSkill}
+module.exports = { getSkills, getSkillById, addSkill, updateSkill, deleteSkill }
